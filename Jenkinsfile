@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL
+                git credentialsId: 'github-pat', url: 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL and credentials ID
             }
         }
         
