@@ -158,7 +158,6 @@ def weight_loss_calculator():
                 goal_lower = goal.lower().replace(' ', '_')
 
                 
-
                 bmr = calculate_bmr(weight, height_cm, age, gender_lower)
                 tdee = calculate_tdee(bmr, activity_level_lower)
                 calorie_intake = calculate_calorie_intake(tdee, goal_lower)
