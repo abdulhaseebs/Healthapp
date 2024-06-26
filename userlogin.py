@@ -1,4 +1,4 @@
-import streamlit as st
+\import streamlit as st
 import hashlib
 import pandas as pd
 import os
@@ -90,7 +90,8 @@ def user_exists(username):
 def validate_user(username, password):
     users = load_users()
     hashed_password = hash_password(password)
-    user = users[(users['username'] == username) & (users['password'] == hashed_password)]
+    user = users[(users['username'] == username) &
+                 (users['password'] == hashed_password)]
     return not user.empty
 
 
@@ -140,8 +141,11 @@ def weight_loss_calculator():
 
     age = st.number_input('Enter your age (years)')
     gender = st.radio('Select your gender', ('Male', 'Female'))
-    activity_level = st.selectbox('Select your activity level', ('Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active', 'Extra Active'))
-    goal = st.selectbox('Select your goal', ('Lose Weight', 'Maintain Weight', 'Gain Weight'))
+    activity_level = st.selectbox('Select your activity level',
+                                  ('Sedentary', 'Lightly Active', 'Moderately Active',
+                                   'Very Active', 'Extra Active'))
+    goal = st.selectbox('Select your goal',
+                        ('Lose Weight', 'Maintain Weight', 'Gain Weight'))
     exercise_type = st.radio('Select exercise type', ('Walking', 'Running'))
 
     if st.button('Calculate'):
@@ -150,8 +154,8 @@ def weight_loss_calculator():
                 st.write('Calculating your weight loss plan...')
 
                 gender_lower = gender.lower()  # Convert to lowercase
-                activity_level_lower = activity_level.lower().replace(' ', '_')  # Convert to lowercase and replace spaces
-                goal_lower = goal.lower().replace(' ', '_')  # Convert to lowercase and replace spaces
+                activity_level_lower = activity_level.lower().replace(' ', '_')
+                goal_lower = goal.lower().replace(' ', '_')
 
                 bmr = calculate_bmr(weight, height_cm, age, gender_lower)
                 tdee = calculate_tdee(bmr, activity_level_lower)
@@ -159,10 +163,10 @@ def weight_loss_calculator():
                 calories_to_burn_per_day = tdee - calorie_intake  # Caloric deficit per day
 
                 if calories_to_burn_per_day <= 0:
-                    st.error("Error: Your current goal doesn't involve weight loss. Please select 'Lose Weight' goal.")
+                    st.error("Error: Your current goal doesn't involve weight loss. "
+                             "Please select 'Lose Weight' goal.")
                     return
 
-                # Calculate miles to walk or run per day
                 if exercise_type == 'Walking':
                     steps_per_mile = STEPS_PER_MILE_WALKING
                     calories_per_step = CALORIES_PER_STEP_WALKING
@@ -170,8 +174,10 @@ def weight_loss_calculator():
                     steps_per_mile = STEPS_PER_MILE_RUNNING
                     calories_per_step = CALORIES_PER_STEP_RUNNING
 
-                miles_per_day = calculate_miles_to_exercise(calories_to_burn_per_day, steps_per_mile, calories_per_step)
-                time_to_goal_days = calculate_time_to_goal((weight - desired_weight) * 7700, calories_to_burn_per_day)
+                miles_per_day = calculate_miles_to_exercise(calories_to_burn_per_day,
+                                                            steps_per_mile, calories_per_step)
+                time_to_goal_days = calculate_time_to_goal((weight - desired_weight) * 7700,
+                                                           calories_to_burn_per_day)
 
                 st.success('Calculation completed!')
                 st.subheader('Weight Loss Plan:')
