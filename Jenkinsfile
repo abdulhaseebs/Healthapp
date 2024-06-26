@@ -7,24 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/abdulhaseebs/Healthapp.git', branch: 'master'
-            }
-        }
-
-        stage('Maven Build') {
-            steps {
-                // Define the Maven installation (if not configured globally)
-                // tools {
-                //     maven 'Maven3' // Name of the Maven installation configured in Jenkins
-                // }
-                
-                // Run Maven build
-                sh 'mvn clean package'  // Adjust the Maven command as per your build goals
-            }
-        }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
