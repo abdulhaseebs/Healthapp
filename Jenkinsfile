@@ -2,14 +2,14 @@ pipeline {
     agent any
     
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('abhifarhan42')  // Credentials ID for Docker Hub
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Credentials ID for Docker Hub
         DOCKER_IMAGE = 'abhifarhan42/healthapp'  // Replace with your Docker Hub username and image name
     }
     
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL and credentials ID
+                git 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL
             }
         }
         
