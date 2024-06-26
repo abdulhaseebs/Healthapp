@@ -1,53 +1,55 @@
 pipeline {
     agent any
-
+    
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Update 'dockerhub' to match your credentials ID
-        DOCKER_IMAGE = 'abhifarhan42/healthappjenkins'    // Update to match your Docker Hub repository name
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
+        DOCKER_IMAGE = 'yourdockerhubusername/healthapp-streamlit' // Replace with your Docker Hub username and repository name
+        STREAMLIT_PORT = 8501 // Port on which Streamlit app runs
     }
-
+    
     stages {
-        stage('Clone repository') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/abdulhaseebs/Healthapp.git', branch: 'master'
+                git url: 'https://github.com/abdulhaseebs/Healthapp.git', branch: 'main' // Replace with your GitHub repository URL and branch
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
-                    def dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
-                    // Optionally, you can tag the image with 'latest' for the latest build
-                    dockerImage.tag("${DOCKER_IMAGE}:latest")
+                    // Build the Docker image
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
+                    dockerImage.tag("${DOCKER_IMAGE}:latest") // Tag the image as 'latest'
                 }
             }
         }
-
+        
         stage('Push to Docker Hub') {
             steps {
                 script {
+                    // Push the Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         dockerImage.push("${env.BUILD_ID}")
-                        dockerImage.push('latest') // Push 'latest' tag to Docker Hub
+                        dockerImage.push('latest')
                     }
                 }
             }
         }
-
-        stage('Clean up') {
+        
+        stage('Cleanup') {
             steps {
-                sh "docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}"
-                sh "docker rmi ${DOCKER_IMAGE}:latest" // Clean up 'latest' tag as well
+                sh "docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}" // Clean up images locally
+                sh "docker rmi ${DOCKER_IMAGE}:latest"
             }
         }
     }
-
+    
     post {
         success {
-            echo 'Pipeline succeeded! Any additional success criteria can be added here.'
+            echo 'Pipeline succeeded! Docker image deployed to Docker Hub.'
         }
         failure {
-            echo 'Pipeline failed! Any additional failure handling can be added here.'
+            echo 'Pipeline failed! Check the logs for details.'
         }
     }
 }
