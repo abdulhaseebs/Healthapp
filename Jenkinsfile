@@ -28,10 +28,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    sh '''
-                    #!/bin/bash
-                    docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}
-                    '''
+                    sh 'docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}'
                 }
             }
         }
