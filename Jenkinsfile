@@ -3,31 +3,20 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Credentials ID for Docker Hub
-        DOCKER_IMAGE = 'abhifarhan42/healthapp'  // Replace with your Docker Hub username and image name
+        DOCKER_IMAGE = 'abhifarhan42/healthapp'  // Docker Hub username and image name
     }
     
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL
+                git 'https://github.com/abdulhaseebs/Healthapp.git'  // GitHub repository URL
             }
         }
         
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        dockerImage.push('latest')
-                        dockerImage.push("${env.BUILD_ID}")
-                    }
-                }
-            }
-        }
-        
-        stage('Deploy to Docker Hub') {
-            steps {
-                script {
+                    def dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         dockerImage.push('latest')
                         dockerImage.push("${env.BUILD_ID}")
@@ -38,7 +27,9 @@ pipeline {
         
         stage('Cleanup') {
             steps {
-                sh 'docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}'
+                script {
+                    sh 'docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}'
+                }
             }
         }
     }
