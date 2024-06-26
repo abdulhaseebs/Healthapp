@@ -24,13 +24,5 @@ pipeline {
                 }
             }
         }
-        
-        stage('Cleanup') {
-            steps {
-                script {
-                    sh 'docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}'
-                }
-            }
-        }
     }
 }
