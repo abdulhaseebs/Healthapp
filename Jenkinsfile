@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('abhifarhan42')  // Credentials ID for Docker Hub
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Credentials ID for Docker Hub
         DOCKER_IMAGE = 'abhifarhan42/healthapp'  // Replace with your Docker Hub username and image name
     }
     
