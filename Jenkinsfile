@@ -1,55 +1,37 @@
-pipeline {
-    agent any
-    
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
-        DOCKER_IMAGE = 'yourdockerhubusername/healthapp-streamlit' // Replace with your Docker Hub username and repository name
-        STREAMLIT_PORT = 8501 // Port on which Streamlit app runs
-    }
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/abdulhaseebs/Healthapp.git', branch: 'main' // Replace with your GitHub repository URL and branch
-            }
-        }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build the Docker image
-                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
-                    dockerImage.tag("${DOCKER_IMAGE}:latest") // Tag the image as 'latest'
-                }
-            }
-        }
-        
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    // Push the Docker image to Docker Hub
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        dockerImage.push("${env.BUILD_ID}")
-                        dockerImage.push('latest')
-                    }
-                }
-            }
-        }
-        
-        stage('Cleanup') {
-            steps {
-                sh "docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}" // Clean up images locally
-                sh "docker rmi ${DOCKER_IMAGE}:latest"
-            }
-        }
-    }
-    
-    post {
-        success {
-            echo 'Pipeline succeeded! Docker image deployed to Docker Hub.'
-        }
-        failure {
-            echo 'Pipeline failed! Check the logs for details.'
-        }
-    }
-}
+#name: CI/CD Pipeline
+
+#on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build Docker image
+      run: |
+        docker build -t abhifarhan42/healthapp:latest .
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image to Docker Hub
+      run: docker push abhifarhan42/healthapp:latest
