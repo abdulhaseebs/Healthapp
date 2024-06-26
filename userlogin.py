@@ -14,7 +14,7 @@ USER_DATA_FILE = 'users.csv'
 
 
 def calculate_bmr(weight, height, age, gender):
-    gender_lower = gender.lower()  # Convert to lowercase
+    gender_lower = gender.lower()# Convert to lowercase
 
     if gender_lower == 'male':
         bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
@@ -153,9 +153,11 @@ def weight_loss_calculator():
             try:
                 st.write('Calculating your weight loss plan...')
 
-                gender_lower = gender.lower()  # Convert to lowercase
+                gender_lower = gender.lower() # Convert to lowercase
                 activity_level_lower = activity_level.lower().replace(' ', '_')
                 goal_lower = goal.lower().replace(' ', '_')
+
+                
 
                 bmr = calculate_bmr(weight, height_cm, age, gender_lower)
                 tdee = calculate_tdee(bmr, activity_level_lower)
