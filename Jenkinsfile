@@ -3,13 +3,13 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')  // Credentials ID for Docker Hub
-        DOCKER_IMAGE = 'yourdockerhubusername/userlogin'  // Replace with your Docker Hub username and image name
+        DOCKER_IMAGE = 'abhifarhan42/healthapp'  // Replace with your Docker Hub username and image name
     }
     
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/yourusername/yourrepository.git'  // Replace with your GitHub repository URL
+                git 'https://github.com/abdulhaseebs/Healthapp.git'  // Replace with your GitHub repository URL
             }
         }
         
