@@ -1,4 +1,4 @@
-\import streamlit as st
+import streamlit as st
 import hashlib
 import pandas as pd
 import os
@@ -154,8 +154,8 @@ def weight_loss_calculator():
                 st.write('Calculating your weight loss plan...')
 
                 gender_lower = gender.lower()  # Convert to lowercase
-                activity_level_lower = activity_level.lower().replace(' ', '_')
-                goal_lower = goal.lower().replace(' ', '_')
+                activity_level_lower = activity_level.lower().replace(' ', '_')  # Convert to lowercase and replace spaces
+                goal_lower = goal.lower().replace(' ', '_')  # Convert to lowercase and replace spaces
 
                 bmr = calculate_bmr(weight, height_cm, age, gender_lower)
                 tdee = calculate_tdee(bmr, activity_level_lower)
@@ -167,6 +167,7 @@ def weight_loss_calculator():
                              "Please select 'Lose Weight' goal.")
                     return
 
+                # Calculate miles to walk or run per day
                 if exercise_type == 'Walking':
                     steps_per_mile = STEPS_PER_MILE_WALKING
                     calories_per_step = CALORIES_PER_STEP_WALKING
