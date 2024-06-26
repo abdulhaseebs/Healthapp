@@ -1,37 +1,64 @@
-#name: CI/CD Pipeline
+pipeline {
+    agent any
 
-#on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        DOCKER_IMAGE = 'abhifarhan42/healthappjenkins'
+    }
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/abdulhaseebs/Healthapp.git', branch: 'master'
+            }
+        }
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+        stage('Maven Build') {
+            steps {
+                // Define the Maven installation (if not configured globally)
+                // tools {
+                //     maven 'Maven3' // Name of the Maven installation configured in Jenkins
+                // }
+                
+                // Run Maven build
+                sh 'mvn clean package'  // Adjust the Maven command as per your build goals
+            }
+        }
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
+                    dockerImage.tag("${DOCKER_IMAGE}:latest")
+                }
+            }
+        }
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        dockerImage.push("${env.BUILD_ID}")
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
 
-    - name: Build Docker image
-      run: |
-        docker build -t abhifarhan42/healthapp:latest .
+        stage('Clean up') {
+            steps {
+                sh "docker rmi ${DOCKER_IMAGE}:${env.BUILD_ID}"
+                sh "docker rmi ${DOCKER_IMAGE}:latest"
+            }
+        }
+    }
 
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Push Docker image to Docker Hub
-      run: docker push abhifarhan42/healthapp:latest
+    post {
+        success {
+            echo 'Pipeline succeeded! Any additional success criteria can be added here.'
+        }
+        failure {
+            echo 'Pipeline failed! Any additional failure handling can be added here.'
+        }
+    }
+}
